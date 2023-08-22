@@ -54,25 +54,18 @@
     color: #666;
   }
   .option.selected {
-    background-color: #3498db;
     color: #fff;
   }
   .option.correct {
   background-color: green;
   color: white;
+  box-shadow: 0 2px 20px rgba(0, 255, 0, 1);
 }
 
 .option.incorrect {
   background-color: red;
   color: white;
-}
-
-  .correct {
-  color: green;
-}
-
-.incorrect {
-  color: red;
+  box-shadow: 0 2px 20px rgba(255, 0, 0, 1);
 }
 
 .restart-btn {
@@ -227,7 +220,7 @@ function updateCounter(index) {
 function initQuiz() {
   const quizContainer = document.querySelector("#quiz-container");
   quizContainer.innerHTML = `
-    <h1>Креативный Тест</h1>
+    <h1>Тест по ГЕНШИИИИИНУУУУ</h1>
     <p class="question"></p>
     <div class="options"></div>
     <p class="counter">Вопрос 1 из ${questions.length}</p>
