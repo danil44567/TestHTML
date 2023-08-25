@@ -15,6 +15,9 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      background-image: url("Background.jpeg");
+      background-size: cover; /* чтобы изображение заполнило всю доступную область */
+      background-position: center center; /* чтобы изображение было выровнено по центру */
     }
 
     .quiz-container {
@@ -306,7 +309,7 @@
 
       correctAnswersElement.textContent = correctAnswers;
 
-      if (correctAnswersPercentage >= 70) {
+      if (correctAnswersPercentage >= 90) {
         correctAnswersElement.style.color = "green";
       } else if (correctAnswersPercentage >= 50) {
         correctAnswersElement.style.color = "orange";
