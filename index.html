@@ -82,6 +82,39 @@
   background-color: #555;
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+    visibility: hidden;
+  }
+}
+
+.fade-out {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s forwards;
+}
+
+
 </style>
 <title>Genshin Test</title>
 </head>
@@ -169,7 +202,7 @@ function loadQuestion(index) {
 
   questions[index].options.forEach((option, optionIndex) => {
     const optionElement = document.createElement("div");
-    optionElement.classList.add("option");
+    optionElement.classList.add("option", "fade-in");
     optionElement.textContent = option;
     optionElement.addEventListener("click", () => selectOption(optionElement, optionIndex));
     optionsContainer.appendChild(optionElement);
@@ -178,8 +211,7 @@ function loadQuestion(index) {
   updateCounter(index);
 }
 
-  
-window.addEventListener("DOMContentLoaded", initQuiz);
+    window.addEventListener("DOMContentLoaded", initQuiz);
 
 function selectOption(optionElement, selectedIndex) {
   if (isCheckingAnswer) {
@@ -198,6 +230,13 @@ function selectOption(optionElement, selectedIndex) {
   } else {
     options[selectedIndex].classList.add("incorrect");
   }
+
+  options.forEach((option, index) => {
+    if (index !== selectedIndex) {
+      option.classList.remove("fade-in");
+      option.classList.add("fade-out");
+    }
+  });
 
   setTimeout(() => {
     currentQuestionIndex++;
