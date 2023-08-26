@@ -20,6 +20,7 @@
       /* чтобы изображение заполнило всю доступную область */
       background-position: center center;
       /* чтобы изображение было выровнено по центру */
+      animation: fadeIn 1s ease-in;
     }
 
     .quiz-container {
@@ -30,6 +31,7 @@
       max-width: 500px;
       width: 100%;
       text-align: center;
+      position: relative;
     }
 
     h1 {
@@ -141,16 +143,42 @@
       color: green;
       font-weight: bold;
     }
+
+    .quiz-container::before,
+.quiz-container::after {
+  content: "?";
+  position: absolute;
+  font-size: 36px;
+  color: #3498db;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Тень */
+  animation: rotateQuestion 10s infinite linear; /* Анимация вращения */
+}
+
+.quiz-container::before {
+  top: 10px;
+  left: 10px;
+}
+
+.quiz-container::after {
+  bottom: 10px;
+  right: 10px;
+}
+
+@keyframes rotateQuestion {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
   </style>
   <title>Genshin Test</title>
 </head>
 
 <body>
   <div class="quiz-container" id="quiz-container">
-    <h1>Тест по ГЕНШИИИИИНУУУУ</h1>
-    <p class="question"></p>
-    <div class="options"></div>
-    <p class="counter">Вопрос 1 из {totalQuestions}</p>
+   <!-- Элемент заполняется из js-->
   </div>
   <script>
     // Ваши вопросы и варианты ответов
@@ -660,6 +688,8 @@
 
       // ... добавьте другие вопросы по аналогии
     ];
+    const quizTitle = "Genshin Test"
+
 
     let currentQuestionIndex = 0;
     let correctAnswers = 0;
@@ -739,7 +769,7 @@
     function initQuiz() {
       const quizContainer = document.querySelector("#quiz-container");
       quizContainer.innerHTML = `
-    <h1>Тест по ГЕНШИИИИИНУУУУ</h1>
+    <h1>${quizTitle}</h1>
     <p class="question"></p>
     <div class="options"></div>
     <p class="counter">Вопрос 1 из ${questions.length}</p>
