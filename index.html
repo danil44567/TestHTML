@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://yandex.ru/games/sdk/v2"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -145,42 +146,55 @@
     }
 
     .quiz-container::before,
-.quiz-container::after {
-  content: "?";
-  position: absolute;
-  font-size: 36px;
-  color: #3498db;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Тень */
-  animation: rotateQuestion 10s infinite linear; /* Анимация вращения */
-}
+    .quiz-container::after {
+      content: "?";
+      position: absolute;
+      font-size: 36px;
+      color: #3498db;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      /* Тень */
+      animation: rotateQuestion 10s infinite linear;
+      /* Анимация вращения */
+    }
 
-.quiz-container::before {
-  top: 10px;
-  left: 10px;
-}
+    .quiz-container::before {
+      top: 10px;
+      left: 10px;
+    }
 
-.quiz-container::after {
-  bottom: 10px;
-  right: 10px;
-}
+    .quiz-container::after {
+      bottom: 10px;
+      right: 10px;
+    }
 
-@keyframes rotateQuestion {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+    @keyframes rotateQuestion {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
   <title>Genshin Test</title>
 </head>
 
 <body>
   <div class="quiz-container" id="quiz-container">
-   <!-- Элемент заполняется из js-->
+    <!-- Элемент заполняется из js-->
   </div>
   <script>
+    YaGames
+    .init()
+    .then(ysdk => {
+        console.log('Yandex SDK initialized');
+        window.ysdk = ysdk;
+        ysdk.adv.showFullscreenAdv();
+        ysdk.features.LoadingAPI?.ready();
+    });
+
+
     // Ваши вопросы и варианты ответов
     const questions = [
       {
@@ -719,6 +733,8 @@
       });
 
       updateCounter(index);
+
+      ysdk.adv.showFullscreenAdv();
     }
 
     window.addEventListener("DOMContentLoaded", initQuiz);
@@ -757,6 +773,21 @@
         }
         isCheckingAnswer = false; // Снимаем флаг проверки после завершения
       }, 1000);
+
+      if (currentQuestionIndex >= 10)
+      {
+        ysdk.feedback.canReview()
+        .then(({ value, reason }) => {
+            if (value) {
+                ysdk.feedback.requestReview()
+                    .then(({ feedbackSent }) => {
+                        console.log(feedbackSent);
+                    })
+            } else {
+                console.log(reason)
+            }
+        })
+      }
     }
 
 
