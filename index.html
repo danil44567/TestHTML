@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
   <meta charset="UTF-8">
@@ -59,6 +59,22 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    button {
+      margin: 0 auto;
+      background-color: #257bb5;
+      color: white;
+      font-weight: bolder;
+      max-width: 200px;
+      padding: 1.5vh;
+      font-size: 3vh;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      outline: none;
+      border-style: none;
     }
 
     .option:hover {
@@ -194,6 +210,8 @@
         window.ysdk = ysdk;
         ysdk.adv.showFullscreenAdv();
         ysdk.features.LoadingAPI?.ready();
+        showMenu()
+        setTimeout(warningAd, adTimeout)
       });
 
 
@@ -706,6 +724,22 @@
     ];
     const quizTitle = "Супер тест по Genshin Impact"
 
+    const adTimeout = 61000
+
+    const states = {
+      menu: 1,
+      quiz: 2,
+      final: 3,
+    }
+
+    function showMenu() {
+      state = states.menu
+      quizContainer.innerHTML = `<h1>Супер тест по Genshin Impact</h1>
+    <button onclick="initQuiz()">Начать тест!</button>`
+    }
+
+    let state = states.menu
+    let isShowingAd = false
 
     let currentQuestionIndex = 0;
     let correctAnswers = 0;
@@ -735,11 +769,7 @@
       });
 
       updateCounter(index);
-
-
     }
-
-    window.addEventListener("DOMContentLoaded", initQuiz);
 
     function selectOption(optionElement, selectedIndex) {
       if (isCheckingAnswer) {
@@ -769,26 +799,31 @@
       setTimeout(() => {
         currentQuestionIndex++;
         if (currentQuestionIndex < questions.length) {
-          loadQuestion(currentQuestionIndex);
+          if (!isShowingAd) {
+            loadQuestion(currentQuestionIndex);
+          }
         } else {
-          showFinalScore();
+          state = states.final;
+          if (!isShowingAd) {
+            showFinalScore();
+          }
         }
         isCheckingAnswer = false; // Снимаем флаг проверки после завершения
       }, 1000);
 
-      if (currentQuestionIndex >= 10) {
-        ysdk.feedback.canReview()
-          .then(({ value, reason }) => {
-            if (value) {
-              ysdk.feedback.requestReview()
-                .then(({ feedbackSent }) => {
-                  console.log(feedbackSent);
-                })
-            } else {
-              console.log(reason)
-            }
-          })
-      }
+      // if (currentQuestionIndex >= 10) {
+      //   ysdk.feedback.canReview()
+      //     .then(({ value, reason }) => {
+      //       if (value) {
+      //         ysdk.feedback.requestReview()
+      //           .then(({ feedbackSent }) => {
+      //             console.log(feedbackSent);
+      //           })
+      //       } else {
+      //         console.log(reason)
+      //       }
+      //     })
+      // }
     }
 
 
@@ -797,22 +832,25 @@
       counterElement.textContent = `Вопрос ${index + 1} из ${questions.length}`;
     }
 
-
-    function initQuiz() {
-      const quizContainer = document.querySelector("#quiz-container");
+    function fillQuizContainer() {
       quizContainer.innerHTML = `
     <h1>${quizTitle}</h1>
     <p class="question"></p>
     <div class="options"></div>
     <p class="counter">Вопрос 1 из ${questions.length}</p>
   `;
-      ysdk.adv.showFullscreenAdv();
+    }
+
+    function initQuiz() {
+      fillQuizContainer()
       currentQuestionIndex = 0;
       correctAnswers = 0;
+      state = states.quiz;
       loadQuestion(currentQuestionIndex);
     }
 
     function showFinalScore() {
+      state = states.final;
       const quizContainer = document.querySelector("#quiz-container");
       const resultsContainer = document.createElement("div");
       resultsContainer.classList.add("results-container");
@@ -837,7 +875,37 @@
       quizContainer.appendChild(resultsContainer); // Добавляем результаты
 
       const restartButton = quizContainer.querySelector(".restart-btn");
-      restartButton.addEventListener("click", initQuiz);
+      restartButton.addEventListener("click", showMenu);
+    }
+    
+    function warningAd() {
+      isShowingAd = true
+      setTime(3)
+    }
+
+    function setTime(seconds) {
+      if (seconds > 0) {
+        quizContainer.innerHTML = `<h2>Реклама через</h2><h1>${seconds}</h1>`
+        setTimeout(() => setTime(seconds - 1), 1001)
+      }
+      else {
+        setTimeout(() => {
+          isShowingAd = false
+          if (state === states.menu) {
+            showMenu()
+          }
+          else if (state === states.quiz) {
+            fillQuizContainer()
+            loadQuestion(currentQuestionIndex)
+            isCheckingAnswer = false
+          }
+          else if (state === states.final) {
+            showFinalScore()
+          }
+          setTimeout(warningAd, adTimeout)
+        }, 1001)
+        ysdk.adv.showFullscreenAdv();
+      }
     }
 
 
